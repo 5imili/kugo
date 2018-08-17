@@ -2,17 +2,22 @@ package service
 
 import (
 	"context"
+
+	"github.com/5imili/kugo/pkg/dao"
 )
 
 //Operation xxx
 type Operation interface {
 	ListTask(ctx context.Context) error
+	CreateTask(ctx context.Context) error
+	GetTask(ctx context.Context) error
+	DeleteTask(ctx context.Context) error
 }
 
 // Options contains other pkgs used for console operations
 // like db or kubernetes etc.
 type Options struct {
-	//DB dao.Storage
+	DB dao.Storage
 }
 
 type service struct {

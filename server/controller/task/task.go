@@ -2,6 +2,7 @@ package task
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/5imili/kugo/server/controller"
@@ -53,18 +54,28 @@ func (t *task) listTask(w http.ResponseWriter, r *http.Request) {
 
 func (t *task) createTask(w http.ResponseWriter, r *http.Request) {
 	tracer := trace.GetTraceFromRequest(r)
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		tracer.Error(err)
+		utils.CommReply(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	tracer.Info(string(data))
 	tracer.Info("createTask")
-	fmt.Fprintln(w, "hello boy")
+	t.opt.Service.CreateTask(r.Context())
+	utils.CommReply(w, r, http.StatusOK, "success")
 }
 
 func (t *task) deleteTask(w http.ResponseWriter, r *http.Request) {
 	tracer := trace.GetTraceFromRequest(r)
-	tracer.Info("createTask")
-	fmt.Fprintln(w, "hello boy")
+	tracer.Info("deleteTask")
+	t.opt.Service.DeleteTask(r.Context())
+	utils.CommReply(w, r, http.StatusOK, "success")
 }
 
 func (t *task) getTask(w http.ResponseWriter, r *http.Request) {
 	tracer := trace.GetTraceFromRequest(r)
-	tracer.Info("createTask")
-	fmt.Fprintln(w, "hello boy")
+	tracer.Info("getTask")
+	t.opt.Service.GetTask(r.Context())
+	utils.CommReply(w, r, http.StatusOK, "success")
 }

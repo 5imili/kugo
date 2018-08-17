@@ -35,7 +35,9 @@ func New(opt Options) Server {
 	v2Router := router.PathPrefix("/kugo/api/v2").Subrouter()
 	//register sub routers
 	task.New(opt.CtrlOpts).Register(v2Router)
-	opt.CtrlOpts.Service = service.New(&service.Options{})
+	opt.CtrlOpts.Service = service.New(&service.Options{
+		DB: opt.CtrlOpts.DB,
+	})
 	return &server{
 		opt:    opt,
 		router: v2Router,
