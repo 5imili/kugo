@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -81,7 +80,6 @@ func Execute() {
 }
 
 func init() {
-	flag.Parse()
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
