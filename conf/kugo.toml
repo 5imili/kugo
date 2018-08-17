@@ -1,0 +1,4 @@
+[server]
+  listen = ":7878"
+  pid = "kugo.pid"
+  
