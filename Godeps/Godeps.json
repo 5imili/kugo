@@ -63,6 +63,16 @@
 			"Rev": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
 		},
 		{
+			"ImportPath": "github.com/jmoiron/sqlx",
+			"Comment": "sqlx-v1.1-150-g0dae4fe",
+			"Rev": "0dae4fefe7c0e190f7b5a78dac28a1c82cc8d849"
+		},
+		{
+			"ImportPath": "github.com/jmoiron/sqlx/reflectx",
+			"Comment": "sqlx-v1.1-150-g0dae4fe",
+			"Rev": "0dae4fefe7c0e190f7b5a78dac28a1c82cc8d849"
+		},
+		{
 			"ImportPath": "github.com/leopoldxx/go-utils/middleware",
 			"Rev": "39cffea1dab685ff2abdac64da73647d25fa84f1"
 		},
