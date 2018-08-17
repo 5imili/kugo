@@ -29,6 +29,7 @@ func initDaoDefault() {
 	viper.SetDefault(DaoIdleConns, 50)
 }
 
+//GetDao xxx
 func GetDao() dao.Storage {
 	mysqlOnce.Do(func() {
 		mysqlDao = mysql.New(&mysql.Options{

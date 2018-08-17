@@ -19,6 +19,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/5imili/kugo/cmd/pkgs"
 	"github.com/5imili/kugo/server"
 	"github.com/5imili/kugo/server/controller"
 	"github.com/gosoon/glog"
@@ -57,7 +58,9 @@ to quickly create a Cobra application.`,
 		// defer pidFileRm()
 		// ctx, cancel := context.WithCancel(context.TODO())
 		// defer cancel()
-		ctrlOPS := &controller.Options{}
+		ctrlOPS := &controller.Options{
+			DB: pkgs.GetDao(),
+		}
 		s := server.New(server.Options{
 			ListenAddr: viper.GetString("server.listen"),
 			CtrlOpts:   ctrlOPS,

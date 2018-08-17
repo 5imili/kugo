@@ -1,4 +1,8 @@
 [server]
   listen = ":7878"
   pid = "kugo.pid"
-  
+
+[dao]
+  idleConns = 50
+  maxConns = 100
+  connection = "test:test@tcp(10.86.82.12:3306)/kugo?charset=utf8&parseTime=true&loc=Asia%2FShanghai"
