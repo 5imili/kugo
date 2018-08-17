@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -22,7 +23,7 @@ import (
 	"github.com/5imili/kugo/cmd/pkgs"
 	"github.com/5imili/kugo/server"
 	"github.com/5imili/kugo/server/controller"
-	"github.com/gosoon/glog"
+	"github.com/leopoldxx/go-utils/trace/glog"
 	"github.com/spf13/cobra"
 	//"github.com/5imili/kugo/pkg/pid"
 	"github.com/spf13/viper"
@@ -80,6 +81,7 @@ func Execute() {
 }
 
 func init() {
+	flag.Parse()
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
