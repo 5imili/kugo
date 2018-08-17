@@ -33,8 +33,9 @@ VALUES (:namespace,
 		res sql.Result
 		err error
 	)
+
 	if m.db != nil {
-		res, err = m.db.Exec(sqlTpl, task.NameSpace, task.Resource, task.Type, task.Spec, task.Status, task.OpUser)
+		res, err = m.db.NamedExec(sqlTpl, *task)
 		if err != nil {
 			tracer.Errorf("failed to insert task: %s", err)
 			return 0, err

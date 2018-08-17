@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/5imili/kugo/pkg/dao"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
