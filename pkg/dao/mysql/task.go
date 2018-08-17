@@ -12,13 +12,14 @@ func (m *mysql) CreateTask(ctx context.Context, task *types.Task) (int64, error)
 	const (
 		sqlTpl = `
 INSERT INTO task (
+	namespace,
 	resource,
 	task_type,
 	spec,
 	status,
 	op_user,
 	create_time)
-VALUES (
+VALUES (:namespace,
 	:resource,
 	:task_type,
 	:spec,
@@ -33,12 +34,13 @@ VALUES (
 		err error
 	)
 	if m.db != nil {
-		res, err = m.db.NamedExec(sqlTpl, *task)
+		res, err = m.db.Exec(sqlTpl, task.NameSpace, task.Resource, task.Type, task.Spec, task.Status, task.OpUser)
+		if err != nil {
+			tracer.Errorf("failed to insert task: %s", err)
+			return 0, err
+		}
 	}
-	if err != nil {
-		tracer.Errorf("failed to insert task: %s", err)
-		return 0, err
-	}
+
 	tracer.Info("insert task successfully")
 	lastID, err := res.LastInsertId()
 	if err != nil {
