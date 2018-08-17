@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"github.com/5imili/kugo/pkg/dao"
+	"github.com/5imili/kugo/pkg/dao/mysql/types"
 )
 
 //Operation xxx
 type Operation interface {
 	ListTask(ctx context.Context) error
-	CreateTask(ctx context.Context) error
+	CreateTask(ctx context.Context, namespace string, info *Task) (*types.Task, error)
 	GetTask(ctx context.Context) error
 	DeleteTask(ctx context.Context) error
 }

@@ -1,8 +1,7 @@
 CREATE TABLE `task` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `category_type` varchar(16) NOT NULL DEFAULT '' COMMENT 'task 附属资源类型',
-  `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'task附属资源类型id',
-  `resource` varchar(16) NOT NULL DEFAULT '' COMMENT '任务要操作的资源类型',
+  `namespace` varchar(256) NOT NULL DEFAULT '' COMMENT 'task 附属Namespace',
+  `resource` varchar(16) NOT NULL DEFAULT '' COMMENT 'task 附属资源类型',
   `task_type` varchar(32) NOT NULL DEFAULT '' COMMENT '任务类型: create, update, delete , etc.',
   `spec` text COMMENT '任务参数',
   `status` text COMMENT '任务状态',

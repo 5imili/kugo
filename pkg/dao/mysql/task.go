@@ -2,13 +2,50 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 
+	"github.com/5imili/kugo/pkg/dao/mysql/types"
 	"github.com/leopoldxx/go-utils/trace"
 )
 
-func (m *mysql) CreateTask(ctx context.Context) {
+func (m *mysql) CreateTask(ctx context.Context, task *types.Task) (int64, error) {
+	const (
+		sqlTpl = `
+INSERT INTO task (
+	resource,
+	task_type,
+	spec,
+	status,
+	op_user,
+	create_time)
+VALUES (
+	:resource,
+	:task_type,
+	:spec,
+	:status,
+	:op_user,
+	NOW());`
+	)
 	tracer := trace.GetTraceFromContext(ctx)
-	tracer.Info("CreateTask")
+
+	var (
+		res sql.Result
+		err error
+	)
+	if m.db != nil {
+		res, err = m.db.NamedExec(sqlTpl, *task)
+	}
+	if err != nil {
+		tracer.Errorf("failed to insert task: %s", err)
+		return 0, err
+	}
+	tracer.Info("insert task successfully")
+	lastID, err := res.LastInsertId()
+	if err != nil {
+		tracer.Errorf("failed to get lastid of the task: %s", err)
+		return 0, err
+	}
+	return lastID, err
 }
 
 func (m *mysql) ListTask(ctx context.Context) {

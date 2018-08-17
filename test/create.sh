@@ -1,8 +1,7 @@
 #!/bin/bash
 request_body=$(cat <<EOF
 {
-    "category_type":"a",
-    "category_id":1
+    "resource":"money"
 }
 EOF
 )

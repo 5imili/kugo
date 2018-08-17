@@ -1,11 +1,13 @@
 package task
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/5imili/kugo/server/controller"
+	"github.com/5imili/kugo/server/service"
 	"github.com/5imili/kugo/server/utils"
 	"github.com/gorilla/mux"
 	"github.com/leopoldxx/go-utils/middleware"
@@ -54,16 +56,35 @@ func (t *task) listTask(w http.ResponseWriter, r *http.Request) {
 
 func (t *task) createTask(w http.ResponseWriter, r *http.Request) {
 	tracer := trace.GetTraceFromRequest(r)
+	vars := mux.Vars(r)
+	ns := vars["namespace"]
+	if ns == "" {
+		msg := fmt.Sprintf("request namespace is null")
+		tracer.Error(msg)
+		utils.CommReply(w, r, http.StatusBadRequest, msg)
+	}
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		tracer.Error(err)
 		utils.CommReply(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
+	info := &service.Task{}
+	err = json.Unmarshal(data, info)
+	if err != nil {
+		tracer.Error(err)
+		utils.CommReply(w, r, http.StatusBadRequest, fmt.Sprintf("parse request body failed: %v", err))
+		return
+	}
 	tracer.Info(string(data))
-	tracer.Info("createTask")
-	t.opt.Service.CreateTask(r.Context())
-	utils.CommReply(w, r, http.StatusOK, "success")
+	task, err := t.opt.Service.CreateTask(r.Context(), ns, info)
+	if err != nil {
+		tracer.Error(err)
+		utils.CommReply(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+	js, _ := json.Marshal(task)
+	utils.CommReply(w, r, http.StatusOK, string(js))
 }
 
 func (t *task) deleteTask(w http.ResponseWriter, r *http.Request) {
