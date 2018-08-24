@@ -1,7 +1,7 @@
 package utils
 
 import (
-	dbtypes "git.xiaojukeji.com/didicloud/kube-odin/pkg/dao/types"
+	dbtypes "github.com/5imili/kugo/pkg/dao/mysql/types"
 	schedtypes "github.com/5imili/kugo/pkg/task/types"
 )
 

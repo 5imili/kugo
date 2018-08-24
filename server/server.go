@@ -2,10 +2,12 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/5imili/kugo/server/controller"
 	"github.com/5imili/kugo/server/controller/task"
 	"github.com/5imili/kugo/server/service"
+	"github.com/facebookgo/httpdown"
 	"github.com/gorilla/mux"
 )
 
@@ -53,6 +55,9 @@ func (s *server) ListenAndServe() error {
 		Addr:    s.opt.ListenAddr,
 		Handler: s.router,
 	}
-
-	return httpServer.ListenAndServe()
+	hd := &httpdown.HTTP{
+		StopTimeout: time.Second,
+		KillTimeout: time.Second,
+	}
+	return httpdown.ListenAndServe(httpServer, hd)
 }

@@ -1,7 +1,8 @@
-package task
+package taskscheduler
 
 import (
 	"context"
+	"errors"
 
 	"github.com/5imili/kugo/pkg/dao"
 	"github.com/5imili/kugo/pkg/task/scheduler"
@@ -13,6 +14,10 @@ const (
 	maxRetryTimes = 3
 )
 
+type taskScheduler struct {
+	dao dao.Storage
+}
+
 var (
 	task = taskScheduler{}
 )
@@ -22,17 +27,12 @@ func Scheduler() scheduler.Scheduler {
 	return &task
 }
 
-type taskScheduler struct {
-	dao dao.Storage
-}
-
 func (sched *taskScheduler) GetName() string {
 	return string("task")
 }
-
 func (sched *taskScheduler) Init(cfg schedtypes.InitConfigs) error {
 	if sched == nil {
-		return error.New("sched is nil")
+		return errors.New("sched is nil")
 	}
 	sched.dao = cfg.Dao
 	return nil

@@ -65,8 +65,10 @@ to quickly create a Cobra application.`,
 			ListenAddr: viper.GetString("server.listen"),
 			CtrlOpts:   ctrlOPS,
 		})
-
+		schedManager := pkgs.GetScheduler(pkgs.GetDao())
+		go schedManager.Schedule()
 		glog.Fatal(s.ListenAndServe())
+		schedManager.Stop()
 	},
 }
 
