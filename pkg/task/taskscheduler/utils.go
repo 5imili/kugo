@@ -12,16 +12,16 @@ func convertSchedTaskToTask(schedtask *schedtypes.Task) (*tasktypes.Task, error)
 	t := &tasktypes.Task{
 		Common: &schedtask.Common,
 	}
-	t.Spec = &tasktypes.Spec{}
-	err := json.Unmarshal([]byte(schedtask.Spec), t.Spec)
-	if err != nil {
-		return nil, err
-	}
+	// t.Spec = &tasktypes.Spec{}
+	// err := json.Unmarshal([]byte(schedtask.Spec), t.Spec)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	t.Status = &tasktypes.Status{}
 	if len(schedtask.Status) == 0 {
 		schedtask.Status = "{}"
 	}
-	err = json.Unmarshal([]byte(schedtask.Status), t.Status)
+	err := json.Unmarshal([]byte(schedtask.Status), t.Status)
 	if err != nil {
 		return nil, err
 	}
