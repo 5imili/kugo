@@ -12,6 +12,7 @@ import (
 	"github.com/5imili/kugo/pkg/task/types"
 	"github.com/5imili/kugo/pkg/task/utils"
 	"github.com/leopoldxx/go-utils/trace"
+	"github.com/zieckey/etcdsync"
 )
 
 const (
@@ -139,6 +140,16 @@ func (m *Manager) Schedule() error {
 					fmt.Sprintf("schedTask:%s:%s:%d", task.Resource, task.Type, task.ID))
 				tracer := trace.GetTraceFromContext(newCtx)
 				lockKey := fmt.Sprintf("%s/%d", m.lockPrefix, task.ID)
+				m, err := etcdsync.New(lockKey, 10, []string{"http://127.0.0.1:2379"})
+				if m == nil || err != nil {
+					tracer.Info("etcdsync.New failed")
+					return
+				}
+				err = m.Lock()
+				if err != nil {
+					tracer.Errorf("lock task failed:%s", err)
+					return
+				}
 				// unlock, newCtx2, err := m.locker.Trylock(newCtx, lockKey)
 				// if err != nil {
 				// 	if err != context.DeadlineExceeded {
@@ -147,11 +158,11 @@ func (m *Manager) Schedule() error {
 				// 	return
 				// }
 				tracer.Infof("task has been locked by %s \n", lockKey)
-				// defer func() {
-				// 	time.Sleep(time.Second)
-				// 	unlock()
-				// 	tracer.Info("task has been unlocked")
-				// }()
+				defer func() {
+					time.Sleep(time.Second)
+					m.Unlock()
+					tracer.Info("task has been unlocked")
+				}()
 				newTask, err := m.dao.GetOpenTaskByTaskID(m.ctx, task.ID)
 				if err != nil {
 					tracer.Errorf("task can not be scheduled now: %d, err: %v", task.ID, err)

@@ -38,9 +38,9 @@ func convertTaskToDBTask(grouptask *tasktypes.Task) *dbtypes.Task {
 	dbtask.IsClosed = grouptask.Common.Close
 	dbtask.IsPaused = grouptask.Common.Pause
 
-	data, _ := json.Marshal(grouptask.Spec)
-	dbtask.Spec = string(data)
-	data, _ = json.Marshal(grouptask.Status)
+	// data, _ := json.Marshal(grouptask.Spec)
+	// dbtask.Spec = string(data)
+	data, _ := json.Marshal(grouptask.Status)
 	dbtask.Status = string(data)
 	return dbtask
 }
