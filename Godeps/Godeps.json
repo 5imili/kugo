@@ -4,6 +4,36 @@
 	"GodepVersion": "v80",
 	"Deps": [
 		{
+			"ImportPath": "github.com/coreos/etcd/client",
+			"Comment": "v3.3.0-rc.0-1802-g9ecc727dc",
+			"Rev": "9ecc727dc8fd731dfb33ecf1de80c92b8b0b0f03"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
+			"Comment": "v3.3.0-rc.0-1802-g9ecc727dc",
+			"Rev": "9ecc727dc8fd731dfb33ecf1de80c92b8b0b0f03"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/pkg/srv",
+			"Comment": "v3.3.0-rc.0-1802-g9ecc727dc",
+			"Rev": "9ecc727dc8fd731dfb33ecf1de80c92b8b0b0f03"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/pkg/types",
+			"Comment": "v3.3.0-rc.0-1802-g9ecc727dc",
+			"Rev": "9ecc727dc8fd731dfb33ecf1de80c92b8b0b0f03"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/version",
+			"Comment": "v3.3.0-rc.0-1802-g9ecc727dc",
+			"Rev": "9ecc727dc8fd731dfb33ecf1de80c92b8b0b0f03"
+		},
+		{
+			"ImportPath": "github.com/coreos/go-semver/semver",
+			"Comment": "v0.2.0-9-ge214231",
+			"Rev": "e214231b295a8ea9479f11b70b35d5acf3556d9b"
+		},
+		{
 			"ImportPath": "github.com/facebookgo/clock",
 			"Rev": "600d898af40aa09a7a93ecb9265d87b0504b6f03"
 		},
@@ -148,6 +178,15 @@
 			"ImportPath": "github.com/spf13/viper",
 			"Comment": "v1.1.0",
 			"Rev": "907c19d40d9a6c9bb55f040ff4ae45271a4754b9"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Comment": "v1.1.1-16-g00b869d",
+			"Rev": "00b869d2f4a5e27445c2d916fa106fc72c106d4c"
+		},
+		{
+			"ImportPath": "github.com/zieckey/etcdsync",
+			"Rev": "cd5b26bc05a152757ee97690a5ed707f990f0bc3"
 		},
 		{
 			"ImportPath": "golang.org/x/sys/unix",
