@@ -67,7 +67,11 @@ to quickly create a Cobra application.`,
 		})
 		schedManager := pkgs.GetScheduler(pkgs.GetDao())
 		go schedManager.Schedule()
-		glog.Fatal(s.ListenAndServe())
+
+		if err := s.ListenAndServe(); err != nil {
+			println(err)
+		}
+
 		schedManager.Stop()
 	},
 }
