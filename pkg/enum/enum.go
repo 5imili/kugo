@@ -18,5 +18,7 @@ func (s State) String() string {
 }
 
 const (
-	CreatePending = State("create-pending")
+	TaskPending = State("task-pending")
+	TaskDoing   = State("task-doing")
+	TaskDone    = State("task-done")
 )

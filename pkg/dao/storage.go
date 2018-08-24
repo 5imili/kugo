@@ -14,4 +14,5 @@ type Storage interface {
 	DeleteTask(ctx context.Context)
 	ListOpenTasks(ctx context.Context) ([]types.Task, error)
 	GetOpenTaskByTaskID(ctx context.Context, id int64) (*types.Task, error)
+	UpdateTask(ctx context.Context, task *types.Task) error
 }

@@ -13,6 +13,54 @@ import (
 	"github.com/leopoldxx/go-utils/trace"
 )
 
+func updateTableFieldByID(ctx context.Context, db *sqlx.DB, tx *sqlx.Tx, table string, id int64, fields map[types.Field]types.Value) error {
+	var (
+		sql = `
+UPDATE %s 
+SET %s
+WHERE id=? ;`
+	)
+	tracer := trace.GetTraceFromContext(ctx)
+	//if len(fields) == 0 {
+	//	tracer.Warnf("invalid update fields")
+	//	return errors.New("invalid update fields")
+	//}
+	var (
+		dest        []string
+		fieldsValue []interface{}
+		err         error
+	)
+	for k, v := range fields {
+		dest = append(dest, fmt.Sprintf("%s=?", string(k)))
+		fieldsValue = append(fieldsValue, v)
+	}
+	// append the last id field in where clause
+	fieldsValue = append(fieldsValue, id)
+	sql = fmt.Sprintf(sql, table, strings.Join(dest, ","))
+
+	if db != nil {
+		_, err = db.Exec(sql, fieldsValue...)
+	} else {
+		_, err = tx.Exec(sql, fieldsValue...)
+	}
+	if err != nil {
+		tracer.Errorf("failed to update %s: %s", table, err)
+		return err
+	}
+
+	tracer.Infof("update table %s #%d successfully", table, id)
+	return nil
+}
+
+// update task status
+func (m *mysql) UpdateTask(ctx context.Context, task *types.Task) error {
+	return updateTableFieldByID(ctx, m.db, nil, "task", task.ID, map[types.Field]types.Value{
+		types.FieldStatus:   task.Status,
+		types.FieldIsClosed: task.IsClosed,
+		types.FieldIsPaused: task.IsPaused,
+	})
+}
+
 func (m *mysql) CreateTask(ctx context.Context, task *types.Task) (int64, error) {
 	const (
 		sqlTpl = `
