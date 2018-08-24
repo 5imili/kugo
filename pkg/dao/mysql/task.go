@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -63,6 +64,7 @@ func (m *mysql) ListOpenTasks(ctx context.Context) ([]types.Task, error) {
 	if err != nil {
 		return nil, err
 	}
+	return tasks, err
 }
 
 func (m *mysql) ListTask(ctx context.Context) {
@@ -90,7 +92,7 @@ func (m *mysql) GetOpenTaskByTaskID(ctx context.Context, id int64) (*types.Task,
 	}
 
 	if len(tasks) == 0 {
-		return nil, types.ErrNotFound
+		return nil, errors.New("task not found")
 	}
 
 	task := &tasks[0]
@@ -98,14 +100,13 @@ func (m *mysql) GetOpenTaskByTaskID(ctx context.Context, id int64) (*types.Task,
 		return task, nil
 	}
 
-	return nil, types.ErrNotFound
+	return nil, errors.New("task not found")
 }
 
 func getTaskByField(ctx context.Context, db *sqlx.DB,
 	fields map[types.Field]types.Value) ([]types.Task, error) {
 	const (
-		sql = queryViaMasterSQLHit +
-			` SELECT id,namespace, resource, task_type, spec, status, is_canceled, is_paused, is_skip_paused,
+		sql = ` SELECT id,namespace, resource, task_type, spec, status, is_canceled, is_paused, is_skip_paused,
 	is_urgent_skipped, urgent_skip_comment, is_closed, is_closed_manually, op_user, create_time, last_update_time
 FROM task
 WHERE %s

@@ -22,3 +22,23 @@ type Task struct {
 	CreateTime        time.Time `db:"create_time"`
 	LastUpdateTime    time.Time `db:"last_update_time"`
 }
+
+type Field string
+
+const (
+	FieldID                = Field("id")
+	FieldUUID              = Field("uuid")
+	FieldStatus            = Field("status")
+	FieldIsSkipped         = Field("is_skipped")
+	FieldIsWithdrawn       = Field("is_withdrawn")
+	FieldIsApproved        = Field("is_approved")
+	FieldIsExecuted        = Field("is_executed")
+	FieldIsClosed          = Field("is_closed")
+	FieldIsClosedManually  = Field("is_closed_manually")
+	FieldIsPaused          = Field("is_paused")
+	FieldIsSkipPaused      = Field("is_skip_paused")
+	FieldIsUrgentSkipped   = Field("is_urgent_skipped")
+	FieldUrgentSkipComment = Field("urgent_skip_comment")
+)
+
+type Value interface{}
