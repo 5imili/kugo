@@ -3,8 +3,12 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"reflect"
+	"strings"
 
 	"github.com/5imili/kugo/pkg/dao/mysql/types"
+	"github.com/jmoiron/sqlx"
 	"github.com/leopoldxx/go-utils/trace"
 )
 
@@ -51,6 +55,16 @@ VALUES (:namespace,
 	return lastID, err
 }
 
+func (m *mysql) ListOpenTasks(ctx context.Context) ([]types.Task, error) {
+	tasks, err := getTaskByField(ctx, m.db, map[types.Field]types.Value{
+		types.FieldIsClosed: false,
+		types.FieldIsPaused: false,
+	})
+	if err != nil {
+		return nil, err
+	}
+}
+
 func (m *mysql) ListTask(ctx context.Context) {
 	tracer := trace.GetTraceFromContext(ctx)
 	tracer.Info("CreateTask")
@@ -64,4 +78,102 @@ func (m *mysql) GetTask(ctx context.Context) {
 func (m *mysql) DeleteTask(ctx context.Context) {
 	tracer := trace.GetTraceFromContext(ctx)
 	tracer.Info("CreateTask")
+}
+
+func (m *mysql) GetOpenTaskByTaskID(ctx context.Context, id int64) (*types.Task, error) {
+	tasks, err := getTaskByField(ctx, m.db, map[types.Field]types.Value{
+		types.FieldID:       id,
+		types.FieldIsClosed: false,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tasks) == 0 {
+		return nil, types.ErrNotFound
+	}
+
+	task := &tasks[0]
+	if !task.IsPaused || (task.IsPaused && task.IsSkipPaused) {
+		return task, nil
+	}
+
+	return nil, types.ErrNotFound
+}
+
+func getTaskByField(ctx context.Context, db *sqlx.DB,
+	fields map[types.Field]types.Value) ([]types.Task, error) {
+	const (
+		sql = queryViaMasterSQLHit +
+			` SELECT id,namespace, resource, task_type, spec, status, is_canceled, is_paused, is_skip_paused,
+	is_urgent_skipped, urgent_skip_comment, is_closed, is_closed_manually, op_user, create_time, last_update_time
+FROM task
+WHERE %s
+ORDER BY create_time DESC ;`
+		//	AND %s = ?
+		//LIMIT 1;`
+	)
+	tasks := []types.Task{}
+	err := getTableRowsByField(ctx, db, sql, &tasks, fields)
+	if err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+func getTableRowsByField(ctx context.Context, db *sqlx.DB, sql string,
+	result interface{}, fields map[types.Field]types.Value) error {
+
+	tracer := trace.GetTraceFromContext(ctx)
+	var fieldsValue []interface{}
+	if len(fields) > 0 {
+		sql, fieldsValue = formatQuerySQL(sql, fields)
+	}
+	//tracer.Info(sql, fieldsValue)
+
+	err := db.Select(result, sql, fieldsValue...)
+	if err != nil {
+		tracer.Errorf("failed to get data: %v", err)
+		return err
+	}
+	return nil
+}
+
+func formatQuerySQL(sql string, fields map[types.Field]types.Value) (string, []interface{}) {
+	var (
+		dest        []string
+		fieldsValue []interface{}
+	)
+	for k, v := range fields {
+		value := reflect.ValueOf(v)
+		if value.Kind() == reflect.Slice {
+			slen := value.Len()
+			if slen > 0 {
+				placeholder := []string{}
+				valueholder := []interface{}{}
+				for i := 0; i < slen; i++ {
+					placeholder = append(placeholder, "?")
+					valueholder = append(valueholder,
+						value.Index(i).Interface())
+				}
+				dest = append(dest, fmt.Sprintf("%s IN (%s)",
+					string(k), strings.Join(placeholder, ",")))
+				fieldsValue = append(fieldsValue, valueholder...)
+			}
+		} else {
+			if fv, ok := v.(types.Field); ok {
+				dest = append(dest, fmt.Sprintf("%s=%s", string(k), string(fv)))
+			} else {
+				dest = append(dest, fmt.Sprintf("%s=?", string(k)))
+				fieldsValue = append(fieldsValue, v)
+			}
+		}
+	}
+
+	if len(dest) == 0 {
+		return sql, fieldsValue
+	}
+
+	sql = fmt.Sprintf(sql, strings.Join(dest, " AND "))
+	return sql, fieldsValue
 }
